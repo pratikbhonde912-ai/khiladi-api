@@ -1,8 +1,9 @@
 export default async function handler(req, res) {
     try {
-        const zapUrl = "https://zapupi.com/api/create_order";
+        // MERI SABSE BADI GALTI YAHAN THI! Ab ye Asli Panel URL hai.
+        const zapUrl = "https://panel.zapupi.com/api/create_order"; 
         
-        // MERI GALTI THEEK HO GAYI: Ab chota 'z' hai (zap...)
+        // Teri exact correct API key (chote 'z' ke sath)
         const myApiKey = "zap15364f6d9b5af1b47270c52a72bb0663";
         
         const params = new URLSearchParams();
@@ -30,11 +31,11 @@ export default async function handler(req, res) {
         try {
             data = JSON.parse(textData);
         } catch(e) {
-            return res.send(`<h3 style="color:red; text-align:center; margin-top:50px;">API Gateway Error</h3><div style="background:#222; color:#0f0; padding:15px; font-family:monospace; word-wrap:break-word;">${textData}</div>`);
+            return res.send(`<h3 style="color:red; text-align:center; margin-top:50px;">API Address Error</h3><div style="background:#222; color:#0f0; padding:15px; font-family:monospace; word-wrap:break-word;">${textData}</div>`);
         }
 
         if (data.status === true || data.status === "true") {
-            // SUCCESS! Seedha Payment link par bhej dega
+            // SUCCESS! Seedha Payment link par bhejega
             res.redirect(302, data.data.payment_url);
         } else {
             res.send(`<h3 style="color:red; text-align:center; margin-top:50px;">ZapUPI Error: ${data.msg || JSON.stringify(data)}</h3><center><button onclick="window.history.back()" style="padding:10px;">Go Back</button></center>`);
