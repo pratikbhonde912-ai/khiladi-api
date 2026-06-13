@@ -2,9 +2,11 @@ export default async function handler(req, res) {
     try {
         const zapUrl = "https://zapupi.com/api/create_order";
         
-        // ASLI JADOO: JSON ki jagah Form Data (URL Encoded) lagaya hai
+        // MERI GALTI THEEK HO GAYI: Ab chota 'z' hai (zap...)
+        const myApiKey = "zap15364f6d9b5af1b47270c52a72bb0663";
+        
         const params = new URLSearchParams();
-        params.append('key', 'Zap15364f6d9b5af1b47270c52a72bb0663');
+        params.append('key', myApiKey);
         params.append('client_txn_id', 'TXN' + Date.now() + Math.floor(Math.random() * 1000));
         params.append('amount', req.query.amount || '10');
         params.append('p_info', 'Khiladi Hub Recharge');
@@ -16,7 +18,6 @@ export default async function handler(req, res) {
         const response = await fetch(zapUrl, {
             method: 'POST',
             headers: {
-                // Yahan ZapUPI ko bataya ki hum purane Form format mein data bhej rahe hain
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'
             },
@@ -27,13 +28,13 @@ export default async function handler(req, res) {
         
         let data;
         try {
-            data = JSON.parse(textData); // ZapUPI ke response ko padha
+            data = JSON.parse(textData);
         } catch(e) {
-            return res.send(`<h3 style="color:red; text-align:center; margin-top:50px;">API Format Error:</h3><div style="background:#222; color:#0f0; padding:15px; font-family:monospace;">${textData}</div>`);
+            return res.send(`<h3 style="color:red; text-align:center; margin-top:50px;">API Gateway Error</h3><div style="background:#222; color:#0f0; padding:15px; font-family:monospace; word-wrap:break-word;">${textData}</div>`);
         }
 
         if (data.status === true || data.status === "true") {
-            // Seedha Payment QR page par bhej do!
+            // SUCCESS! Seedha Payment link par bhej dega
             res.redirect(302, data.data.payment_url);
         } else {
             res.send(`<h3 style="color:red; text-align:center; margin-top:50px;">ZapUPI Error: ${data.msg || JSON.stringify(data)}</h3><center><button onclick="window.history.back()" style="padding:10px;">Go Back</button></center>`);
